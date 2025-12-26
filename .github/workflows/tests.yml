@@ -1,0 +1,80 @@
+name: Tests & Code Quality
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    strategy:
+      matrix:
+        python-version: ["3.10", "3.11", "3.12"]
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip setuptools wheel
+        pip install -r requirements.txt
+
+    - name: Lint with ruff (if config exists)
+      continue-on-error: true
+      run: |
+        if [ -f "pyproject.toml" ] || [ -f ".ruff.toml" ] || [ -f "ruff.toml" ]; then
+          pip install ruff >/dev/null 2>&1
+          echo "Running ruff check..."
+          ruff check . --exit-zero
+        else
+          echo "Ruff config not found, skipping linting"
+        fi
+
+    - name: Format check with black (if installed)
+      continue-on-error: true
+      run: |
+        pip install black >/dev/null 2>&1
+        echo "Running black check..."
+        black --check . --quiet --exclude="(__pycache__|\.pyc|\.venv|build|dist)" || true
+
+    - name: Run pytest
+      run: |
+        pip install pytest pytest-cov pytest-xdist >/dev/null 2>&1
+        pytest tests/ -v --tb=short --cov=components --cov-report=xml --cov-report=html -n auto
+      continue-on-error: true
+
+    - name: Upload coverage report
+      uses: codecov/codecov-action@v4
+      if: always()
+      with:
+        file: ./coverage.xml
+        flags: unittests
+        name: codecov-umbrella
+        fail_ci_if_error: false
+
+    - name: Upload pytest results
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: pytest-report-${{ matrix.python-version }}
+        path: |
+          htmlcov/
+          .coverage
+        retention-days: 7
+
+    - name: Test Summary
+      if: always()
+      run: |
+        echo "✓ Tests completed for Python ${{ matrix.python-version }}"
+        if [ -f "htmlcov/index.html" ]; then
+          echo "✓ Coverage report available in artifacts"
+        fi

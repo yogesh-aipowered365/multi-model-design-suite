@@ -1,0 +1,43 @@
+{
+  "session_id": "eb8324b6",
+  "timestamp": "2025-12-26T17:41:32.713437",
+  "sidebar_config": {
+    "platform": "Web",
+    "creative_type": "Marketing Creative",
+    "analysis_mode": "Single",
+    "enabled_agents": [
+      "visual",
+      "ux",
+      "market",
+      "conversion",
+      "brand"
+    ]
+  },
+  "results": {
+    "mode": "single",
+    "overall_score": 75,
+    "agent_scores": {
+      "visual": 75,
+      "ux": 75,
+      "market": 75,
+      "conversion": 75,
+      "brand": 75
+    },
+    "findings_summary": {
+      "total": 0,
+      "critical": 0,
+      "warnings": 0,
+      "info": 0
+    },
+    "top_recommendations": [],
+    "impact_analysis": {
+      "conversion_improvement": 11.25,
+      "engagement_improvement": 9.0,
+      "brand_recognition": 7.5
+    },
+    "visual_feedback": {},
+    "brand_compliance": {
+      "enabled": false
+    }
+  }
+}

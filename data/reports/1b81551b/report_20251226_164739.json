@@ -1,0 +1,47 @@
+{
+  "session_id": "1b81551b",
+  "timestamp": "2025-12-26T16:47:39.452729",
+  "sidebar_config": {
+    "platform": "LinkedIn",
+    "creative_type": "Marketing Creative",
+    "analysis_mode": "Single",
+    "enabled_agents": [
+      "visual",
+      "ux",
+      "market",
+      "conversion",
+      "brand"
+    ]
+  },
+  "results": {
+    "mode": "single",
+    "overall_score": 0.0,
+    "agent_scores": {
+      "visual": 0.0,
+      "ux": 0.0,
+      "market": 0.0,
+      "conversion": 0.0,
+      "brand": 0.0
+    },
+    "findings_summary": {
+      "total": 0,
+      "critical": 0,
+      "warnings": 0,
+      "info": 0
+    },
+    "top_recommendations": [],
+    "impact_analysis": {
+      "conversion_improvement": 0.0,
+      "engagement_improvement": 0.0,
+      "brand_recognition": 0.0
+    },
+    "visual_feedback": {},
+    "brand_compliance": {
+      "enabled": false,
+      "score": null,
+      "passed_checks": [],
+      "violations": [],
+      "summary": "No brand rules provided."
+    }
+  }
+}

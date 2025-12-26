@@ -1,0 +1,37 @@
+{
+  "session_id": "test-session-abcd1234",
+  "timestamp": "2025-12-23T11:16:21.148657",
+  "sidebar_config": {
+    "platform": "Instagram",
+    "creative_type": "Marketing Creative",
+    "analysis_mode": "Analyze",
+    "enabled_agents": [
+      "visual",
+      "ux",
+      "market"
+    ]
+  },
+  "results": {
+    "overall_score": 82.5,
+    "agent_scores": {
+      "visual": 85.0,
+      "ux": 80.0,
+      "market": 78.0,
+      "conversion": 83.0,
+      "brand": 82.0
+    },
+    "findings_summary": {
+      "total": 4
+    },
+    "top_recommendations": [
+      {
+        "title": "Improve contrast",
+        "priority": "high"
+      },
+      {
+        "title": "Simplify layout",
+        "priority": "medium"
+      }
+    ]
+  }
+}

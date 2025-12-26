@@ -1,0 +1,70 @@
+# .pre-commit-config.yaml
+# Pre-commit hooks configuration for code quality
+
+# See https://pre-commit.com for more information
+# See https://pre-commit.com/hooks.html for more hooks
+
+repos:
+  # General file fixes
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.5.0
+    hooks:
+      - id: trailing-whitespace
+        name: Trim trailing whitespace
+      - id: end-of-file-fixer
+        name: Fix end of file
+      - id: check-yaml
+        name: Check YAML syntax
+      - id: check-json
+        name: Check JSON syntax
+      - id: check-merge-conflict
+        name: Check for merge conflicts
+      - id: check-case-conflict
+        name: Check for case conflicts
+      - id: debug-statements
+        name: Check for debugger imports
+
+  # Python formatting and linting
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.1.11
+    hooks:
+      # Linting
+      - id: ruff
+        name: Ruff linting
+        args: ['--fix']
+      # Formatting
+      - id: ruff-format
+        name: Ruff format
+        stages: [commit]
+
+  # Type checking (optional, requires pyright installed)
+  # - repo: https://github.com/RobertCraigie/pyright-python
+  #   rev: v1.1.338
+  #   hooks:
+  #     - id: pyright
+  #       name: Pyright type checking
+  #       stages: [commit]
+
+  # Import sorting (ruff handles this via isort plugin)
+  - repo: https://github.com/PyCQA/isort
+    rev: 5.13.2
+    hooks:
+      - id: isort
+        name: isort (Python import sorting)
+
+# Configuration options
+default_language_version:
+  python: python3.11
+
+# Skip certain hooks for certain files
+exclude: |
+  (?x)^(
+      migrations/|
+      __pycache__/|
+      \.git/|
+      \.venv/|
+      venv/|
+      build/|
+      dist/|
+      \.eggs/
+  )

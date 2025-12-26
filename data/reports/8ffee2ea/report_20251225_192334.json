@@ -1,0 +1,102 @@
+{
+  "session_id": "8ffee2ea",
+  "timestamp": "2025-12-25T19:23:34.335943",
+  "sidebar_config": {
+    "platform": "Instagram",
+    "creative_type": "Marketing Creative",
+    "analysis_mode": "Compare",
+    "enabled_agents": [
+      "visual",
+      "ux",
+      "market",
+      "conversion",
+      "brand"
+    ]
+  },
+  "results": {
+    "mode": "compare",
+    "num_designs": 2,
+    "designs": {
+      "Design A": {
+        "overall_score": 80,
+        "agent_scores": {
+          "visual": 78,
+          "ux": 76,
+          "market": 73,
+          "conversion": 80,
+          "brand": 79
+        },
+        "findings_summary": {
+          "total": 13,
+          "critical": 1,
+          "warnings": 3,
+          "info": 9
+        },
+        "top_recommendations": [
+          {
+            "title": "Recommendation 1 for Design A",
+            "description": "Design-specific improvement",
+            "impact": "Improves conversion by 11%",
+            "recommendation": "Take action",
+            "priority": "high"
+          }
+        ]
+      },
+      "Design B": {
+        "overall_score": 85,
+        "agent_scores": {
+          "visual": 81,
+          "ux": 80,
+          "market": 78,
+          "conversion": 82,
+          "brand": 82
+        },
+        "findings_summary": {
+          "total": 14,
+          "critical": 1,
+          "warnings": 2,
+          "info": 10
+        },
+        "top_recommendations": [
+          {
+            "title": "Recommendation 1 for Design B",
+            "description": "Design-specific improvement",
+            "impact": "Improves conversion by 12%",
+            "recommendation": "Take action",
+            "priority": "medium"
+          }
+        ]
+      }
+    },
+    "winner": "Design B",
+    "confidence": "medium",
+    "rankings": [
+      "Design B",
+      "Design A"
+    ],
+    "score_deltas": {
+      "Design A vs B": 5
+    },
+    "key_differences": [
+      {
+        "aspect": "Visual Hierarchy",
+        "winner_advantage": "Design B has stronger visual structure",
+        "details": "Better use of whitespace and contrast"
+      },
+      {
+        "aspect": "Color Palette",
+        "winner_advantage": "Design B has better brand alignment",
+        "details": "Color choices resonate better with target audience"
+      }
+    ],
+    "why_winner_won": [
+      "Design B demonstrates superior visual design",
+      "Better conversion potential based on agent analysis",
+      "Stronger alignment with platform best practices"
+    ],
+    "trade_offs": [
+      "Some designs have better UX while others have better visual appeal",
+      "Trade-off between brand consistency and creative innovation"
+    ]
+  }
+}

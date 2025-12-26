@@ -1,0 +1,585 @@
+/* AIpowered365 Labs Theme */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+* {
+    font-family: 'Inter', sans-serif;
+}
+
+/* Page Background */
+body {
+    background: radial-gradient(ellipse at 50% -30%, #E0ECFF 0%, #F9FAFB 50%, #F3F4F6 100%);
+    min-height: 100vh;
+}
+
+/* Hero Panel */
+.aip365-hero {
+    border-radius: 24px;
+    background: linear-gradient(135deg, #FFFFFF 0%, #F0F4FF 50%, #E8F4FF 100%);
+    border: 1px solid rgba(99, 102, 241, 0.1);
+    padding: 40px 48px;
+    margin-bottom: 32px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.06), 0 0 40px rgba(99, 102, 241, 0.08);
+    position: relative;
+    overflow: hidden;
+}
+
+.aip365-hero::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #7C3AED 0%, #EC4899 50%, #22D3EE 100%);
+}
+
+.aip365-hero-content {
+    display: flex;
+    align-items: center;
+    gap: 40px;
+    justify-content: space-between;
+}
+
+.aip365-hero-left h1 {
+    margin: 0 0 8px 0;
+    font-size: 32px;
+    font-weight: 800;
+    background: linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.aip365-hero-left p {
+    margin: 0 0 24px 0;
+    font-size: 16px;
+    color: #6B7280;
+    font-weight: 500;
+}
+
+.aip365-pills {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.aip365-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    background: linear-gradient(135deg, #E0E7FF 0%, #F3E8FF 100%);
+    border: 1px solid rgba(99, 102, 241, 0.2);
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #4F46E5;
+}
+
+.aip365-hero-right img {
+    max-width: 120px;
+    height: auto;
+    filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.08));
+}
+
+/* Enhanced Hero Details */
+.hero-subtitle {
+    margin: 0 0 24px 0 !important;
+    font-size: 16px !important;
+    color: #374151 !important;
+    font-weight: 500 !important;
+    line-height: 1.5 !important;
+}
+
+.hero-details {
+    margin-top: 24px;
+}
+
+.hero-paragraph {
+    margin: 0 0 20px 0;
+    font-size: 14px;
+    color: #6B7280;
+    line-height: 1.6;
+    font-weight: 400;
+}
+
+.hero-bullets {
+    margin: 0 0 20px 0;
+    display: grid;
+    gap: 10px;
+}
+
+.hero-bullet {
+    font-size: 13px;
+    color: #9CA3AF;
+    font-weight: 500;
+    line-height: 1.4;
+    margin: 0;
+}
+
+.hero-process {
+    margin: 0 0 12px 0;
+    font-size: 13px;
+    color: #6B7280;
+    font-weight: 400;
+}
+
+.hero-audience {
+    margin: 0;
+    font-size: 12px;
+    color: #9CA3AF;
+    font-weight: 400;
+    font-style: italic;
+}
+
+/* Card Container */
+.aip365-card {
+    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(99, 102, 241, 0.1);
+    padding: 32px;
+    margin-bottom: 24px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.04);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.aip365-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 48px rgba(0, 0, 0, 0.08);
+}
+
+.aip365-card-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 24px;
+}
+
+.aip365-card-header h2 {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 700;
+    color: #1F2937;
+}
+
+.aip365-card-header .icon {
+    font-size: 24px;
+}
+
+/* Wizard Shell - Wraps stepper + body */
+.aip365-wizard-shell {
+    border-radius: 22px;
+    background: rgba(255, 255, 255, 0.55);
+    backdrop-filter: blur(10px);
+    padding: 18px;
+    box-shadow: 0 10px 35px rgba(0, 0, 0, 0.06);
+    border: 1px solid rgba(99, 102, 241, 0.12);
+}
+
+/* Wizard Body - Contains step content */
+.aip365-wizard-body {
+    margin-top: 0 !important;
+    border-radius: 22px;
+    background: #ffffff;
+    padding: 18px 26px 26px 26px;
+    border: 2px solid rgba(99, 102, 241, 0.22);
+    box-shadow: 0 12px 30px rgba(99, 102, 241, 0.08);
+    position: relative;
+}
+
+/* Stepper Row - Horizontal flex container */
+.aip365-stepper-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    position: relative;
+    margin: 0 !important;
+    padding: 0 6px 0 6px !important;
+}
+
+/* Step Pill - Each step button */
+.aip365-step-pill {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 16px;
+    border-radius: 16px;
+    background: rgba(243, 244, 246, 0.95);
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    position: relative;
+    z-index: 1;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Step Number Badge */
+.aip365-step-pill .step-num {
+    width: 34px;
+    height: 34px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 14px;
+    background: #e5e7eb;
+    color: #374151;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Step Label Text */
+.aip365-step-pill .step-label {
+    font-weight: 600;
+    font-size: 14px;
+    color: #374151;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ===== DONE STEP ===== */
+.aip365-step-pill.done {
+    background: rgba(34, 197, 94, 0.08);
+    border: 1px solid rgba(34, 197, 94, 0.18);
+}
+
+.aip365-step-pill.done .step-num {
+    background: rgba(34, 197, 94, 0.15);
+    color: #166534;
+}
+
+.aip365-step-pill.done .step-label {
+    color: #166534;
+}
+
+/* ===== ACTIVE STEP (TAB STYLE) ===== */
+/* Active step becomes a tab: brings to front + overlaps body border */
+.aip365-step-pill.active {
+    background: #ffffff;
+    border: 2px solid rgba(99, 102, 241, 0.35);
+    box-shadow: 0 16px 35px rgba(99, 102, 241, 0.18);
+    z-index: 5;
+    margin-bottom: -18px;
+    /* Creates the "attached tab" overlap */
+    padding-bottom: 18px;
+    /* Makes it look integrated */
+    border-bottom-left-radius: 0;
+    /* Blends into body corner */
+    border-bottom-right-radius: 0;
+    /* Blends into body corner */
+}
+
+/* Active step number chip - Purple gradient */
+.aip365-step-pill.active .step-num {
+    color: white;
+    background: linear-gradient(135deg, #7c3aed, #6366f1);
+    box-shadow: 0 10px 24px rgba(99, 102, 241, 0.25);
+}
+
+/* Active step label text */
+.aip365-step-pill.active .step-label {
+    color: #4f46e5;
+    font-weight: 700;
+}
+
+/* ===== TODO STEP ===== */
+.aip365-step-pill.todo {
+    opacity: 0.9;
+}
+
+/* Connectors between steps */
+.aip365-connector {
+    flex: 1;
+    height: 3px;
+    background: #e5e7eb;
+    border-radius: 999px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.aip365-connector.active {
+    background: linear-gradient(90deg, #6366f1, #7c3aed);
+    box-shadow: 0 2px 8px rgba(99, 102, 241, 0.2);
+}
+
+.aip365-connector.done {
+    background: rgba(34, 197, 94, 0.6);
+}
+
+/* File Uploader */
+.aip365-uploader {
+    border: 2.5px dashed #4B5563;
+    border-radius: 16px;
+    padding: 48px 32px;
+    text-align: center;
+    background: linear-gradient(135deg, #F9FAFB 0%, #F3F4F6 100%);
+    transition: all 0.3s;
+    cursor: pointer;
+}
+
+.aip365-uploader:hover {
+    border-color: #374151;
+    background: linear-gradient(135deg, #F3F4F6 0%, #E5E7EB 100%);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+}
+
+.aip365-uploader-icon {
+    font-size: 40px;
+    margin-bottom: 12px;
+}
+
+.aip365-uploader-text {
+    font-size: 16px;
+    font-weight: 600;
+    color: #1F2937;
+    margin-bottom: 8px;
+}
+
+.aip365-uploader-helper {
+    font-size: 14px;
+    color: #6B7280;
+}
+
+/* Primary Button */
+.aip365-button-primary {
+    width: 100%;
+    padding: 14px 32px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #7C3AED 0%, #22D3EE 100%);
+    color: white;
+    border: none;
+    font-weight: 700;
+    font-size: 16px;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(124, 58, 237, 0.3);
+    transition: all 0.3s;
+}
+
+.aip365-button-primary:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(124, 58, 237, 0.4);
+}
+
+.aip365-button-primary:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Helper Text */
+.aip365-helper {
+    font-size: 13px;
+    color: #6B7280;
+    font-weight: 500;
+    margin-top: 8px;
+    line-height: 1.5;
+}
+
+/* Status Banner */
+.aip365-banner {
+    border-radius: 12px;
+    padding: 16px 20px;
+    margin-bottom: 24px;
+    border-left: 4px solid;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.aip365-banner.success {
+    background: #ECFDF5;
+    border-color: #10B981;
+    color: #065F46;
+}
+
+.aip365-banner.info {
+    background: #EFF6FF;
+    border-color: #3B82F6;
+    color: #1E40AF;
+}
+
+.aip365-banner.warning {
+    background: #FFFBEB;
+    border-color: #F59E0B;
+    color: #92400E;
+}
+
+.aip365-banner.error {
+    background: #FEF2F2;
+    border-color: #EF4444;
+    color: #991B1B;
+}
+
+/* Tabs */
+.aip365-tabs {
+    border-bottom: 1px solid #E5E7EB;
+    margin-bottom: 24px;
+}
+
+/* Chip/Badge Selector - Branded Pills */
+.aip365-chips-container {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin: 16px 0;
+    padding: 12px 0;
+}
+
+.aip365-chip {
+    padding: 10px 18px;
+    border-radius: 999px;
+    border: 1.5px solid #7C3AED;
+    background: #ffffff;
+    color: #7C3AED;
+    cursor: pointer;
+    font-weight: 500;
+    font-size: 14px;
+    transition: all 0.2s ease-in-out;
+    white-space: nowrap;
+    display: inline-block;
+}
+
+.aip365-chip:hover {
+    background: #F2F2F2;
+    border-color: #7C3AED;
+    color: #7C3AED;
+    transform: translateY(-1px);
+}
+
+.aip365-chip.selected {
+    background: linear-gradient(135deg, #7C3AED 0%, #8F7BFF 100%);
+    border: none;
+    color: #ffffff;
+    font-weight: 600;
+    box-shadow: 0 4px 12px rgba(124, 58, 237, 0.25);
+}
+
+.aip365-chip.selected:hover {
+    background: linear-gradient(135deg, #6B2FE0 0%, #7E6FED 100%);
+    box-shadow: 0 6px 16px rgba(124, 58, 237, 0.35);
+    transform: translateY(-2px);
+}
+
+.aip365-chip-helper {
+    font-size: 12px;
+    color: #9CA3AF;
+    font-style: italic;
+    margin-top: 8px;
+    display: block;
+}
+
+.aip365-chip-group {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.aip365-chip-group-title {
+    font-weight: 700;
+    color: #1F2937;
+    font-size: 15px;
+    margin-bottom: 8px;
+}
+
+.aip365-chip-group-container {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    align-items: center;
+    padding: 12px 0;
+}
+
+/* Expander */
+.aip365-expander {
+    border: 1px solid #E5E7EB;
+    border-radius: 12px;
+    margin-bottom: 16px;
+}
+
+.aip365-expander-header {
+    padding: 14px 16px;
+    background: #F9FAFB;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 600;
+    color: #374151;
+    border-radius: 12px;
+    transition: all 0.2s;
+}
+
+.aip365-expander-header:hover {
+    background: #F3F4F6;
+}
+
+.aip365-expander-body {
+    padding: 16px;
+    border-top: 1px solid #E5E7EB;
+}
+
+/* Image Info Grid */
+.aip365-image-info-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+}
+
+.aip365-info-item {
+    background: #F9FAFB;
+    border-radius: 12px;
+    padding: 12px;
+    border: 1px solid #E5E7EB;
+}
+
+.aip365-info-label {
+    font-size: 11px;
+    font-weight: 700;
+    color: #6B7280;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.aip365-info-value {
+    font-size: 16px;
+    font-weight: 700;
+    color: #4F46E5;
+    margin-top: 4px;
+    word-break: break-word;
+}
+
+/* Step Container Marker & Active Step Highlight */
+.aip365-step-marker {
+    display: none;
+}
+
+.aip365-current-step {
+    display: none;
+}
+
+/* Optional: Visual highlighting for active step container using :has() selector */
+/* This creates a subtle glow around the active step's main content */
+:has(> .aip365-current-step[data-current-step="1"])~* {
+    /* Content after step marker for step 1 */
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .aip365-hero-content {
+        flex-direction: column;
+        gap: 24px;
+    }
+
+    .aip365-hero-right img {
+        max-width: 80px;
+    }
+
+    .aip365-stepper {
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .aip365-step-line {
+        display: none;
+    }
+
+    .aip365-image-info-grid {
+        grid-template-columns: 1fr;
+    }
+}

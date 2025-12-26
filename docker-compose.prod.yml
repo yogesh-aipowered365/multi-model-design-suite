@@ -1,0 +1,39 @@
+# Production overrides for docker-compose
+# Usage: docker-compose -f docker-compose.yml -f docker-compose.prod.yml up
+
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: production  # Use production target
+    container_name: design-analysis-app-prod
+    environment:
+      - APP_ENV=production
+      - DEBUG=false
+      - LOG_LEVEL=INFO
+      # Production settings
+      - STREAMLIT_SERVER_HEADLESS=true
+      - STREAMLIT_SERVER_ENABLECORS=false
+      - STREAMLIT_SERVER_ENABLEXSRFPROTECTION=true
+    restart: always
+    # Remove volume mount of code (production only uses built image)
+    volumes:
+      - app-data:/data
+      - app-logs:/app/logs
+
+  redis:
+    restart: always
+    # Production requires persistent storage
+    volumes:
+      - redis-prod-data:/data
+
+volumes:
+  app-data:
+    driver: local
+  app-logs:
+    driver: local
+  redis-prod-data:
+    driver: local

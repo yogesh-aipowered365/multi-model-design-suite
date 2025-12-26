@@ -1,0 +1,118 @@
+{
+  "session_id": "1b81551b",
+  "timestamp": "2025-12-26T15:46:28.325694",
+  "sidebar_config": {
+    "platform": "Pinterest",
+    "creative_type": "Social Media Ad",
+    "analysis_mode": "Single",
+    "enabled_agents": [
+      "visual",
+      "ux",
+      "market",
+      "conversion",
+      "brand"
+    ]
+  },
+  "results": {
+    "mode": "single",
+    "overall_score": 45.400000000000006,
+    "agent_scores": {
+      "visual": 75.0,
+      "ux": 70.0,
+      "market": 0.0,
+      "conversion": 0.0,
+      "brand": 82.0
+    },
+    "findings_summary": {
+      "total": 14,
+      "critical": 4,
+      "warnings": 5,
+      "info": 5
+    },
+    "top_recommendations": [
+      {
+        "title": "Color Analysis",
+        "description": "Harmony: monochromatic",
+        "impact": "+10-20% visual impact",
+        "recommendation": "High contrast between black and white enhances readability.",
+        "priority": "info"
+      },
+      {
+        "title": "Color Analysis",
+        "description": "Harmony: monochromatic",
+        "impact": "+10-20% visual impact",
+        "recommendation": "Monochromatic scheme creates a clean and professional look.",
+        "priority": "info"
+      },
+      {
+        "title": "Layout & Composition",
+        "description": "Hierarchy: 65/100",
+        "impact": "+5-15% clarity",
+        "recommendation": "Circular layout creates a strong focal point.",
+        "priority": "info"
+      },
+      {
+        "title": "Layout & Composition",
+        "description": "Hierarchy: 65/100",
+        "impact": "+5-15% clarity",
+        "recommendation": "Text placement around the circle may cause readability issues.",
+        "priority": "info"
+      },
+      {
+        "title": "Critical Issue",
+        "description": "Visual analysis detected critical issue",
+        "impact": "Must fix before launch",
+        "recommendation": "Curved text may affect readability.",
+        "priority": "critical"
+      },
+      {
+        "title": "Usability",
+        "description": "UX analysis",
+        "impact": "+5-15% usability",
+        "recommendation": "Include a clear call-to-action like 'Book Now' or 'Learn More'.",
+        "priority": "warning"
+      },
+      {
+        "title": "Usability",
+        "description": "UX analysis",
+        "impact": "+5-15% usability",
+        "recommendation": "Improve visual hierarchy with contrasting colors or sizes.",
+        "priority": "warning"
+      },
+      {
+        "title": "Accessibility",
+        "description": "WCAG Score: 60/100",
+        "impact": "Compliance + wider reach",
+        "recommendation": "Add descriptive alt text to the logo.",
+        "priority": "warning"
+      },
+      {
+        "title": "Accessibility",
+        "description": "WCAG Score: 60/100",
+        "impact": "Compliance + wider reach",
+        "recommendation": "Consider using more accessible fonts and ensuring text scalability.",
+        "priority": "warning"
+      },
+      {
+        "title": "Critical UX Issue",
+        "description": "UX analysis detected critical issue",
+        "impact": "High impact on conversions",
+        "recommendation": "Lack of call-to-action.",
+        "priority": "critical"
+      }
+    ],
+    "impact_analysis": {
+      "conversion_improvement": 0.0,
+      "engagement_improvement": 0.0,
+      "brand_recognition": 8.200000000000001
+    },
+    "visual_feedback": {},
+    "brand_compliance": {
+      "enabled": false,
+      "score": null,
+      "passed_checks": [],
+      "violations": [],
+      "summary": "No brand rules provided."
+    }
+  }
+}

@@ -1,0 +1,70 @@
+version: '3.8'
+
+services:
+  # Streamlit application
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: development  # Use 'production' for prod
+    container_name: design-analysis-app
+    ports:
+      - "8501:8501"
+    volumes:
+      - .:/app
+      - ./data:/data
+      - ./logs:/app/logs
+    environment:
+      - PYTHONUNBUFFERED=1
+      - APP_ENV=development
+      - DEBUG=true
+      - LOG_LEVEL=DEBUG
+      # Storage configuration
+      - STORAGE_BACKEND=json
+      - STORAGE_DIR=/data/reports
+      # Auth configuration (optional)
+      - AUTH_ENABLED=false
+      # RAG configuration
+      - RAG_DATA_DIR=/data/design_patterns
+      # Logging
+      - LOG_DIR=/app/logs
+    depends_on:
+      - redis
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8501/_stcore/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    restart: unless-stopped
+
+  # Redis (optional, for job queue and caching)
+  redis:
+    image: redis:7-alpine
+    container_name: design-analysis-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    command: redis-server --appendonly yes
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    restart: unless-stopped
+    # Uncomment to disable Redis:
+    # profiles:
+    #   - disabled
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  redis-data:
+    driver: local

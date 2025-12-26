@@ -1,0 +1,113 @@
+[build-system]
+requires = ["setuptools>=45", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "design-analysis-mm"
+version = "1.0.0"
+description = "Multi-agent design analysis system with RAG"
+requires-python = ">=3.11"
+dependencies = [
+    "streamlit>=1.28.0",
+    "pillow>=10.0.0",
+    "numpy>=1.24.0",
+    "opencv-python>=4.8.0",
+    "langchain>=0.1.0",
+    "langchain-community>=0.0.10",
+    "python-dotenv>=1.0.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.4.0",
+    "pytest-cov>=4.1.0",
+    "pytest-mock>=3.11.1",
+    "ruff>=0.1.0",
+    "black>=23.0.0",
+    "isort>=5.12.0",
+    "pre-commit>=3.4.0",
+]
+
+[tool.ruff]
+# Ruff configuration
+line-length = 120
+target-version = "py311"
+extend-exclude = ["migrations", "__pycache__", ".git", ".venv", "venv", "build", "dist"]
+
+[tool.ruff.lint]
+# Enable specific rules
+select = [
+    "E",      # pycodestyle errors
+    "W",      # pycodestyle warnings
+    "F",      # Pyflakes
+    "I",      # isort
+    "C4",     # flake8-comprehensions
+    "B",      # flake8-bugbear
+    "A",      # flake8-builtins
+    "UP",     # pyupgrade
+    "TID",    # flake8-tidy-imports
+    "RUF",    # Ruff-specific rules
+]
+
+ignore = [
+    "E501",   # Line too long (ruff-format handles this)
+    "W191",   # Indentation contains tabs
+    "B008",   # Function call in default argument
+    "A003",   # Builtin name shadowing (sometimes necessary)
+]
+
+[tool.ruff.lint.isort]
+# isort configuration
+profile = "black"
+known-first-party = ["components", "tests"]
+known-third-party = ["streamlit", "langchain", "cv2", "numpy"]
+
+[tool.ruff.format]
+# Formatter configuration
+quote-style = "double"
+indent-style = "space"
+line-ending = "auto"
+skip-magic-trailing-comma = false
+
+[tool.pytest.ini_options]
+# Pytest configuration
+minversion = "7.0"
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = [
+    "-v",
+    "--strict-markers",
+    "--tb=short",
+    "--disable-warnings",
+]
+markers = [
+    "unit: Unit tests",
+    "integration: Integration tests",
+    "contract: Contract tests",
+    "resilience: Resilience tests",
+    "determinism: Determinism tests",
+    "slow: Slow tests",
+]
+
+[tool.coverage.run]
+source = ["components"]
+omit = [
+    "*/tests/*",
+    "*/test_*.py",
+    "*/__init__.py",
+    "*/conftest.py",
+]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "raise AssertionError",
+    "raise NotImplementedError",
+    "if __name__ == .__main__.:",
+    "if TYPE_CHECKING:",
+    "class .*Protocol.*:",
+    "@(abc\\.)?abstractmethod",
+]
