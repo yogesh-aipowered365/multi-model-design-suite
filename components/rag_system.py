@@ -5,12 +5,18 @@ Component 3: Vector Store & RAG System
 Technology: FAISS + OpenRouter Embeddings
 """
 
-import faiss
 import numpy as np
 import json
 import requests
 import os
 from dotenv import load_dotenv
+
+# Try to import faiss, gracefully handle if unavailable
+try:
+    import faiss
+    FAISS_AVAILABLE = True
+except ImportError:
+    FAISS_AVAILABLE = False
 
 load_dotenv()
 
@@ -80,11 +86,41 @@ def initialize_faiss_index(dimension=1536):
         dimension: Embedding dimension (1536 for OpenAI embeddings)
 
     Returns:
-        faiss.Index: FAISS index object
+        faiss.Index or FallbackIndex: FAISS index object or fallback
     """
+    if not FAISS_AVAILABLE:
+        # Return a fallback index object that stores embeddings in memory
+        return FallbackIndex(dimension)
+    
     # Use L2 distance (can switch to Inner Product for cosine similarity)
     index = faiss.IndexFlatL2(dimension)
     return index
+
+
+class FallbackIndex:
+    """Fallback index when FAISS is not available"""
+    def __init__(self, dimension):
+        self.dimension = dimension
+        self.embeddings = None
+        self.data_count = 0
+    
+    def add(self, embeddings):
+        """Add embeddings to the fallback index"""
+        if embeddings.size > 0:
+            self.embeddings = embeddings
+            self.data_count = len(embeddings)
+    
+    def search(self, query_vector, k):
+        """Search using simple L2 distance"""
+        if self.embeddings is None or self.data_count == 0:
+            return np.array([[]], dtype='int64'), np.array([[]], dtype='float32')
+        
+        # Compute L2 distances
+        distances = np.linalg.norm(self.embeddings - query_vector, axis=1)
+        indices = np.argsort(distances)[:k]
+        distances_sorted = distances[indices]
+        
+        return distances_sorted.reshape(1, -1), indices.reshape(1, -1)
 
 
 def load_design_patterns_to_faiss(patterns_json_path, api_key=None):
