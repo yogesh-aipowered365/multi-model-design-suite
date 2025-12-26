@@ -803,6 +803,9 @@ def main():
                     processed_image = preprocess_image(uploaded_file)
                     img_base64 = image_to_base64(processed_image)
                     img_embedding = generate_clip_embedding(processed_image)
+                    # Fallback: use zero embedding if CLIP not available
+                    if img_embedding is None:
+                        img_embedding = np.zeros(512)
                     img_metadata = extract_image_metadata(processed_image)
                 
                 # Create initial state with BYOK API key
