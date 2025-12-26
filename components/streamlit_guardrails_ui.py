@@ -433,6 +433,11 @@ def show_mode_comparison() -> None:
         "Time": [f"{m['estimated_time_seconds']}s" for m in modes.values()],
     }
 
-    import pandas as pd
-    df = pd.DataFrame(comparison_data)
-    st.dataframe(df, use_container_width=True, hide_index=True)
+    try:
+        import pandas as pd
+        df = pd.DataFrame(comparison_data)
+        st.dataframe(df, use_container_width=True, hide_index=True)
+    except ImportError:
+        # Fallback: display as text
+        for key, values in comparison_data.items():
+            st.write(f"{key}: {values}")

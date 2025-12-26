@@ -969,10 +969,15 @@ def main():
                         
                         if relative_scores:
                             # Create comparison dataframe
-                            import pandas as pd
-                            
-                            scores_df = pd.DataFrame(relative_scores).T
-                            st.dataframe(scores_df, use_container_width=True)
+                            try:
+                                import pandas as pd
+                                scores_df = pd.DataFrame(relative_scores).T
+                                st.dataframe(scores_df, use_container_width=True)
+                            except ImportError:
+                                # Fallback: display as text if pandas unavailable
+                                st.write("**Comparison Scores:**")
+                                for key, scores in relative_scores.items():
+                                    st.write(f"**{key}**: {scores}")
                             
                             # Bar chart
                             try:

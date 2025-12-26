@@ -2,10 +2,18 @@
 Enhanced Output Generation with Visuals and Impact Analysis
 """
 
-import plotly.graph_objects as go
-import plotly.express as px
-from plotly.subplots import make_subplots
-import pandas as pd
+try:
+    import plotly.graph_objects as go
+    import plotly.express as px
+    from plotly.subplots import make_subplots
+except ImportError:
+    go = px = None
+
+try:
+    import pandas as pd
+except ImportError:
+    pd = None
+
 import numpy as np
 from datetime import datetime
 import json

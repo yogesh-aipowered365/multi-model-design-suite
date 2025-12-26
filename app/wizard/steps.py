@@ -809,7 +809,10 @@ def render_compare_results(results: dict) -> Tuple[bool, bool]:
     Returns:
         Tuple[bool, bool]: (step_complete, should_advance)
     """
-    import pandas as pd
+    try:
+        import pandas as pd
+    except ImportError:
+        pd = None
 
     # Extract comparison data
     winner = results.get("winner", "Design A")
