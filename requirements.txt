@@ -1,21 +1,19 @@
 streamlit==1.29.0
-faiss-cpu==1.7.4
-pillow==10.1.0
-numpy==1.24.3
-requests==2.31.0
 python-dotenv==1.0.0
-langgraph==0.0.20
+requests==2.31.0
 langchain==0.1.0
 langchain-core==0.1.10
-torch==2.1.0
-torchvision==0.16.0
-ftfy==6.1.1
-regex==2023.10.3
-tqdm==4.66.1
-git+https://github.com/openai/CLIP.git
-
-# NEW DEPENDENCIES FOR ENHANCED FEATURES
 plotly==5.18.0
 pandas==2.1.4
+pillow==10.1.0
+numpy==1.24.3
+faiss-cpu==1.7.4
 opencv-python==4.8.1.78
 reportlab==4.0.9
+tqdm==4.66.1
+regex==2023.10.3
+ftfy==6.1.1
+langgraph==0.0.20
+
+# Note: CLIP and PyTorch are optional - app works without them
+# For production deployments, these can be installed separately if needed

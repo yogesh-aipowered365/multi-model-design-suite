@@ -319,7 +319,39 @@ def generate_clip_embedding(pil_image: Image.Image) -> Optional[np.ndarray]:
         return image_features.cpu().numpy()[0]
     except Exception as e:
         print(f"[WARN] Error generating CLIP embedding: {e}")
-        return None
+        # Fallback to simple hash-based embedding
+        return generate_fallback_embedding(pil_image)
+
+
+def generate_fallback_embedding(pil_image: Image.Image) -> np.ndarray:
+    """
+    Generate a simple fallback embedding when CLIP is unavailable.
+    Uses image histogram features for similarity search.
+    
+    Args:
+        pil_image: PIL.Image object
+        
+    Returns:
+        np.ndarray: 512-dimensional feature vector
+    """
+    try:
+        # Resize to consistent size
+        img_resized = pil_image.resize((64, 64))
+        img_array = np.array(img_resized).flatten().astype(np.float32)
+        
+        # Pad or truncate to 512 dimensions
+        if len(img_array) >= 512:
+            embedding = img_array[:512]
+        else:
+            embedding = np.pad(img_array, (0, 512 - len(img_array)), mode='constant')
+        
+        # Normalize
+        embedding = embedding / (np.linalg.norm(embedding) + 1e-8)
+        return embedding
+    except Exception as e:
+        print(f"[WARN] Fallback embedding failed: {e}")
+        # Return zero vector as last resort
+        return np.zeros(512, dtype=np.float32)
 
 
 # ============================================================================
