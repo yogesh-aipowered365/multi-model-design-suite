@@ -20,10 +20,13 @@ import uuid
 
 try:
     from langgraph.graph import StateGraph, START, END
+    LANGGRAPH_AVAILABLE = True
 except ImportError:
-    # Fallback for older LangGraph versions
-    from langgraph.graph import StateGraph, END
+    # Fallback - LangGraph not available
+    LANGGRAPH_AVAILABLE = False
+    StateGraph = None
     START = None
+    END = None
 
 from components.models import (
     DesignInput, AgentResult, ScoreCard, FullReport,
