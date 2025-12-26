@@ -7,6 +7,7 @@ import streamlit as st
 import json
 import os
 import base64
+import numpy as np
 from datetime import datetime
 from dotenv import load_dotenv
 from PIL import Image
