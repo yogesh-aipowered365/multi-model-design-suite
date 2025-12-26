@@ -129,7 +129,7 @@ def generate_fallback_response(response_type):
     return fallback_responses.get(response_type, {})
 
 
-def call_vision_api(image_base64, prompt, temperature=0.7, max_tokens=2000, retries=2):
+def call_vision_api(image_base64, prompt, temperature=0.7, max_tokens=2000, retries=2, api_key=None):
     """
     Wrapper function to call vision API via LLM client
 
@@ -139,6 +139,7 @@ def call_vision_api(image_base64, prompt, temperature=0.7, max_tokens=2000, retr
         temperature: Model temperature
         max_tokens: Maximum response tokens
         retries: Number of retries
+        api_key: Optional API key (uses env var if not provided)
 
     Returns:
         dict: Parsed JSON response or error dict
@@ -152,7 +153,8 @@ def call_vision_api(image_base64, prompt, temperature=0.7, max_tokens=2000, retr
         temperature=temperature,
         max_tokens=max_tokens,
         retries=retries,
-        json_mode=True
+        json_mode=True,
+        api_key=api_key
     )
 
     # Parse and return JSON
@@ -172,6 +174,9 @@ def visual_analysis_agent(state, faiss_index, metadata, top_k=3):
         dict: Updated state with visual_analysis
     """
     print("🎨 Running Visual Analysis Agent...")
+
+    # Get API key from state (BYOK)
+    api_key = state.get("api_key")
 
     # Retrieve relevant patterns
     creative = state.get("creative_type", "")
@@ -234,16 +239,12 @@ Return ONLY valid JSON, no other text."""
     # Augment with RAG
     enhanced_prompt = augment_prompt_with_rag(base_prompt, patterns)
 
-    # Call vision API via wrapper
-    result = call_vision_api(state['image_base64'], enhanced_prompt, retries=3)
+    # Call vision API via wrapper with user's API key
+    result = call_vision_api(state['image_base64'], enhanced_prompt, retries=3, api_key=api_key)
 
-    # Use fallback if API failed
-    if "error" in result and OPENROUTER_API_KEY:
-        print(
-            f"⚠️  Visual agent API failed: {result.get('error')}. Using fallback response.")
-        result = generate_fallback_response("visual")
-    elif not OPENROUTER_API_KEY:
-        print("⚠️  No API key configured. Using fallback response.")
+    # Use fallback if API failed (no valid API key provided)
+    if "error" in result:
+        print(f"⚠️  Visual agent API failed: {result.get('error')}. Using fallback response.")
         result = generate_fallback_response("visual")
 
     # Update state
@@ -266,6 +267,9 @@ def ux_critique_agent(state, faiss_index, metadata, top_k=3):
         dict: Updated state with ux_analysis
     """
     print("👤 Running UX Critique Agent...")
+
+    # Get API key from state (BYOK)
+    api_key = state.get("api_key")
 
     # Retrieve UX patterns
     creative = state.get("creative_type", "")
@@ -324,15 +328,11 @@ Return ONLY valid JSON, no other text."""
 
     enhanced_prompt = augment_prompt_with_rag(base_prompt, patterns)
     result = call_vision_api(
-        state['image_base64'], enhanced_prompt, retries=3)
+        state['image_base64'], enhanced_prompt, retries=3, api_key=api_key)
 
     # Use fallback if API failed
-    if "error" in result and OPENROUTER_API_KEY:
-        print(
-            f"⚠️  UX agent API failed: {result.get('error')}. Using fallback response.")
-        result = generate_fallback_response("ux")
-    elif not OPENROUTER_API_KEY:
-        print("⚠️  No API key configured. Using fallback response.")
+    if "error" in result:
+        print(f"⚠️  UX agent API failed: {result.get('error')}. Using fallback response.")
         result = generate_fallback_response("ux")
 
     state['ux_analysis'] = result
@@ -354,6 +354,9 @@ def market_research_agent(state, faiss_index, metadata, top_k=3):
         dict: Updated state with market_analysis
     """
     print("📈 Running Market Research Agent...")
+
+    # Get API key from state (BYOK)
+    api_key = state.get("api_key")
 
     # Retrieve market patterns
     creative = state.get("creative_type", "")
@@ -419,15 +422,11 @@ Return ONLY valid JSON, no other text."""
 
     enhanced_prompt = augment_prompt_with_rag(base_prompt, patterns)
     result = call_vision_api(
-        state['image_base64'], enhanced_prompt, retries=3)
+        state['image_base64'], enhanced_prompt, retries=3, api_key=api_key)
 
     # Use fallback if API failed
-    if "error" in result and OPENROUTER_API_KEY:
-        print(
-            f"⚠️  Market agent API failed: {result.get('error')}. Using fallback response.")
-        result = generate_fallback_response("market")
-    elif not OPENROUTER_API_KEY:
-        print("⚠️  No API key configured. Using fallback response.")
+    if "error" in result:
+        print(f"⚠️  Market agent API failed: {result.get('error')}. Using fallback response.")
         result = generate_fallback_response("market")
 
     state['market_analysis'] = result
@@ -442,6 +441,9 @@ def conversion_optimization_agent(state, faiss_index, metadata, top_k=3):
     Focuses on action clarity, messaging, and funnel readiness.
     """
     print("🎯 Running Conversion Optimization Agent...")
+
+    # Get API key from state (BYOK)
+    api_key = state.get("api_key")
 
     creative = state.get("creative_type", "")
     query = f"conversion optimization CTA clarity persuasive copy {state['platform']} {creative}"
@@ -479,15 +481,11 @@ Return ONLY valid JSON."""
 
     enhanced_prompt = augment_prompt_with_rag(base_prompt, patterns)
     result = call_vision_api(
-        state['image_base64'], enhanced_prompt, retries=3)
+        state['image_base64'], enhanced_prompt, retries=3, api_key=api_key)
 
     # Use fallback if API failed
-    if "error" in result and OPENROUTER_API_KEY:
-        print(
-            f"⚠️  Conversion agent API failed: {result.get('error')}. Using fallback response.")
-        result = generate_fallback_response("conversion")
-    elif not OPENROUTER_API_KEY:
-        print("⚠️  No API key configured. Using fallback response.")
+    if "error" in result:
+        print(f"⚠️  Conversion agent API failed: {result.get('error')}. Using fallback response.")
         result = generate_fallback_response("conversion")
 
     state['conversion_analysis'] = result
@@ -501,6 +499,9 @@ def brand_consistency_agent(state, faiss_index, metadata, top_k=3):
     Audits logo usage, palette, typography, tone, and layout against brand best practices.
     """
     print("🏷️ Running Brand Consistency Agent...")
+
+    # Get API key from state (BYOK)
+    api_key = state.get("api_key")
 
     creative = state.get("creative_type", "")
     query = f"brand consistency visual identity logo typography palette tone {state['platform']} {creative}"
@@ -548,15 +549,11 @@ Return ONLY valid JSON."""
 
     enhanced_prompt = augment_prompt_with_rag(base_prompt, patterns)
     result = call_vision_api(
-        state['image_base64'], enhanced_prompt, retries=3)
+        state['image_base64'], enhanced_prompt, retries=3, api_key=api_key)
 
     # Use fallback if API failed
-    if "error" in result and OPENROUTER_API_KEY:
-        print(
-            f"⚠️  Brand agent API failed: {result.get('error')}. Using fallback response.")
-        result = generate_fallback_response("brand")
-    elif not OPENROUTER_API_KEY:
-        print("⚠️  No API key configured. Using fallback response.")
+    if "error" in result:
+        print(f"⚠️  Brand agent API failed: {result.get('error')}. Using fallback response.")
         result = generate_fallback_response("brand")
 
     state['brand_analysis'] = result
