@@ -769,7 +769,7 @@ def main():
             
             with col1:
                 st.subheader("📸 Uploaded Design")
-                st.image(uploaded_file, width="column")
+                st.image(uploaded_file, use_column_width=True)
             
             with col2:
                 st.subheader("ℹ️ Image Information")
