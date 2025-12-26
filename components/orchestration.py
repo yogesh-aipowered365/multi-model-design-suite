@@ -1024,8 +1024,39 @@ def create_orchestration_graph(faiss_index, metadata):
         metadata: Pattern metadata
 
     Returns:
-        Compiled LangGraph application
+        Compiled LangGraph application or fallback callable
     """
+    if not LANGGRAPH_AVAILABLE:
+        # Return a simple fallback function that runs agents sequentially
+        def fallback_graph(initial_state):
+            """Fallback when LangGraph not available - runs simplified analysis"""
+            from components.agents import visual_analysis_agent, ux_critique_agent, market_research_agent, conversion_optimization_agent, brand_consistency_agent
+            
+            state = dict(initial_state) if hasattr(initial_state, '__getitem__') else initial_state
+            
+            # Run agents sequentially with error handling
+            try:
+                if state.get("enabled_agents", {}).get("visual", True):
+                    state = visual_analysis_agent(state, faiss_index, metadata, state.get("top_k", 3))
+                if state.get("enabled_agents", {}).get("ux", True):
+                    state = ux_critique_agent(state, faiss_index, metadata, state.get("top_k", 3))
+                if state.get("enabled_agents", {}).get("market", True):
+                    state = market_research_agent(state, faiss_index, metadata, state.get("top_k", 3))
+                if state.get("enabled_agents", {}).get("conversion", True):
+                    state = conversion_optimization_agent(state, faiss_index, metadata, state.get("top_k", 3))
+                if state.get("enabled_agents", {}).get("brand", True):
+                    state = brand_consistency_agent(state, faiss_index, metadata, state.get("top_k", 3))
+                
+                state = aggregate_results_node(state)
+            except Exception as e:
+                print(f"⚠️ Fallback graph error: {e}")
+                state["errors"] = str(e)
+            
+            return state
+        
+        print("⚠️ LangGraph unavailable, using fallback workflow")
+        return fallback_graph
+    
     from components.agents import visual_analysis_agent, ux_critique_agent, market_research_agent, conversion_optimization_agent, brand_consistency_agent
 
     # Initialize graph
@@ -1100,7 +1131,7 @@ def execute_analysis_workflow(graph, initial_state, progress_callback=None):
     Function 5.3: Execute LangGraph workflow with progress tracking
 
     Args:
-        graph: Compiled LangGraph application
+        graph: Compiled LangGraph application or fallback callable
         initial_state: Initial analysis state
         progress_callback: Function to call for progress updates
 
@@ -1112,29 +1143,38 @@ def execute_analysis_workflow(graph, initial_state, progress_callback=None):
     total_steps = len(step_names)
 
     try:
-        # Execute graph
-        final_state = None
-        current_step = 0
+        # Check if this is a real LangGraph or fallback
+        if LANGGRAPH_AVAILABLE and hasattr(graph, 'stream'):
+            # Real LangGraph - execute with streaming
+            final_state = None
+            current_step = 0
 
-        for output in graph.stream(initial_state):
-            # Update progress
-            if progress_callback and current_step < len(step_names):
-                progress_callback(
-                    current_step + 1,
-                    total_steps,
-                    f"🔄 {step_names[current_step]}..."
-                )
+            for output in graph.stream(initial_state):
+                # Update progress
+                if progress_callback and current_step < len(step_names):
+                    progress_callback(
+                        current_step + 1,
+                        total_steps,
+                        f"🔄 {step_names[current_step]}..."
+                    )
 
-            # LangGraph stream yields dicts keyed by node name; ignore __end__ events
-            if isinstance(output, dict):
-                for key in ['aggregator', 'market_agent', 'ux_agent', 'visual_agent']:
-                    if key in output:
-                        final_state = output[key]
-                        break
+                # LangGraph stream yields dicts keyed by node name; ignore __end__ events
+                if isinstance(output, dict):
+                    for key in ['aggregator', 'market_agent', 'ux_agent', 'visual_agent']:
+                        if key in output:
+                            final_state = output[key]
+                            break
 
-            current_step += 1
+                current_step += 1
 
-        return final_state or {}
+            return final_state or {}
+        else:
+            # Fallback - call graph as function directly
+            if progress_callback:
+                for i, step_name in enumerate(step_names):
+                    progress_callback(i + 1, total_steps, f"🔄 {step_name}...")
+            
+            return graph(initial_state)
 
     except Exception as e:
         print(f"❌ Error in workflow execution: {e}")
