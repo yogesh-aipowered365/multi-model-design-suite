@@ -1034,17 +1034,24 @@ def create_orchestration_graph(faiss_index, metadata):
             
             state = dict(initial_state) if hasattr(initial_state, '__getitem__') else initial_state
             
+            # Normalize enabled_agents to a set for checking
+            enabled_agents = state.get("enabled_agents", [])
+            if isinstance(enabled_agents, list):
+                enabled_agents = set(enabled_agents)
+            elif isinstance(enabled_agents, dict):
+                enabled_agents = set(k for k, v in enabled_agents.items() if v)
+            
             # Run agents sequentially with error handling
             try:
-                if state.get("enabled_agents", {}).get("visual", True):
+                if "visual" in enabled_agents:
                     state = visual_analysis_agent(state, faiss_index, metadata, state.get("top_k", 3))
-                if state.get("enabled_agents", {}).get("ux", True):
+                if "ux" in enabled_agents:
                     state = ux_critique_agent(state, faiss_index, metadata, state.get("top_k", 3))
-                if state.get("enabled_agents", {}).get("market", True):
+                if "market" in enabled_agents:
                     state = market_research_agent(state, faiss_index, metadata, state.get("top_k", 3))
-                if state.get("enabled_agents", {}).get("conversion", True):
+                if "conversion" in enabled_agents:
                     state = conversion_optimization_agent(state, faiss_index, metadata, state.get("top_k", 3))
-                if state.get("enabled_agents", {}).get("brand", True):
+                if "brand" in enabled_agents:
                     state = brand_consistency_agent(state, faiss_index, metadata, state.get("top_k", 3))
                 
                 state = aggregate_results_node(state)
