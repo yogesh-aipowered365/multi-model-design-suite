@@ -240,11 +240,16 @@ Return ONLY valid JSON, no other text."""
     enhanced_prompt = augment_prompt_with_rag(base_prompt, patterns)
 
     # Call vision API via wrapper with user's API key
-    result = call_vision_api(state['image_base64'], enhanced_prompt, retries=3, api_key=api_key)
+    result = call_vision_api(
+        state['image_base64'], enhanced_prompt, retries=3, api_key=api_key)
 
     # Use fallback if API failed (no valid API key provided)
     if "error" in result:
-        print(f"⚠️  Visual agent API failed: {result.get('error')}. Using fallback response.")
+        error_msg = result.get('error', 'Unknown error')
+        print(
+            f"⚠️  Visual agent API failed: {error_msg}")
+        print(f"   API key provided: {bool(api_key)}")
+        print(f"   Image base64 length: {len(state.get('image_base64', ''))}")
         result = generate_fallback_response("visual")
 
     # Update state
@@ -332,7 +337,11 @@ Return ONLY valid JSON, no other text."""
 
     # Use fallback if API failed
     if "error" in result:
-        print(f"⚠️  UX agent API failed: {result.get('error')}. Using fallback response.")
+        error_msg = result.get('error', 'Unknown error')
+        print(
+            f"⚠️  UX agent API failed: {error_msg}")
+        print(f"   API key provided: {bool(api_key)}")
+        print(f"   Image base64 length: {len(state.get('image_base64', ''))}")
         result = generate_fallback_response("ux")
 
     state['ux_analysis'] = result
@@ -426,7 +435,11 @@ Return ONLY valid JSON, no other text."""
 
     # Use fallback if API failed
     if "error" in result:
-        print(f"⚠️  Market agent API failed: {result.get('error')}. Using fallback response.")
+        error_msg = result.get('error', 'Unknown error')
+        print(
+            f"⚠️  Market agent API failed: {error_msg}")
+        print(f"   API key provided: {bool(api_key)}")
+        print(f"   Image base64 length: {len(state.get('image_base64', ''))}")
         result = generate_fallback_response("market")
 
     state['market_analysis'] = result
@@ -485,7 +498,11 @@ Return ONLY valid JSON."""
 
     # Use fallback if API failed
     if "error" in result:
-        print(f"⚠️  Conversion agent API failed: {result.get('error')}. Using fallback response.")
+        error_msg = result.get('error', 'Unknown error')
+        print(
+            f"⚠️  Conversion agent API failed: {error_msg}")
+        print(f"   API key provided: {bool(api_key)}")
+        print(f"   Image base64 length: {len(state.get('image_base64', ''))}")
         result = generate_fallback_response("conversion")
 
     state['conversion_analysis'] = result
@@ -553,7 +570,11 @@ Return ONLY valid JSON."""
 
     # Use fallback if API failed
     if "error" in result:
-        print(f"⚠️  Brand agent API failed: {result.get('error')}. Using fallback response.")
+        error_msg = result.get('error', 'Unknown error')
+        print(
+            f"⚠️  Brand agent API failed: {error_msg}")
+        print(f"   API key provided: {bool(api_key)}")
+        print(f"   Image base64 length: {len(state.get('image_base64', ''))}")
         result = generate_fallback_response("brand")
 
     state['brand_analysis'] = result

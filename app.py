@@ -68,7 +68,7 @@ st.set_page_config(
 def initialize_system():
     """
     Function 6.1: One-time initialization of all components
-    
+
     Returns:
         tuple: (faiss_index, metadata, graph)
     """
@@ -76,19 +76,20 @@ def initialize_system():
         try:
             # Load FAISS index with design patterns
             patterns_path = "data/design_patterns.json"
-            
+
             if not os.path.exists(patterns_path):
                 st.error(f"❌ Design patterns file not found: {patterns_path}")
                 st.stop()
-            
-            faiss_index, metadata = load_design_patterns_to_faiss(patterns_path)
-            
+
+            faiss_index, metadata = load_design_patterns_to_faiss(
+                patterns_path)
+
             # Create LangGraph workflow
             graph = create_orchestration_graph(faiss_index, metadata)
-            
+
             st.success("✅ System initialized successfully!")
             return faiss_index, metadata, graph
-        
+
         except Exception as e:
             st.error(f"❌ Initialization error: {str(e)}")
             st.stop()
@@ -97,17 +98,18 @@ def initialize_system():
 def render_enhanced_results_dashboard(final_report, image_base64, enabled_agents=None):
     """
     Enhanced results display with visuals and graphs
-    
+
     Args:
         final_report: Dict containing analysis results
         image_base64: Original image for visual feedback
     """
     st.divider()
     st.header("📊 Analysis Results - Enhanced View")
-    
+
     # Check for errors
     if "error" in final_report or "error_message" in final_report:
-        st.error(f"Analysis error: {final_report.get('error_message', final_report.get('error', 'Unknown error'))}")
+        st.error(
+            f"Analysis error: {final_report.get('error_message', final_report.get('error', 'Unknown error'))}")
         with st.expander("Raw Error Details"):
             st.json(final_report)
         return
@@ -135,7 +137,8 @@ def render_enhanced_results_dashboard(final_report, image_base64, enabled_agents
 
     for name, payload in agent_outputs.items():
         if isinstance(payload, dict) and "error" in payload:
-            agent_errors.append((name, payload.get("error"), payload.get("raw_content") or payload.get("details") or payload.get("raw_response")))
+            agent_errors.append((name, payload.get("error"), payload.get(
+                "raw_content") or payload.get("details") or payload.get("raw_response")))
     if agent_errors:
         with st.expander("⚠️ Agent errors encountered (click to view)"):
             for name, msg, raw in agent_errors:
@@ -161,14 +164,14 @@ def render_enhanced_results_dashboard(final_report, image_base64, enabled_agents
             recommendation_block = rec.get("recommendation", {})
             if not isinstance(recommendation_block, dict):
                 recommendation_block = {}
-            
+
             return {
                 "priority": rec.get("priority", "medium"),
                 "category": rec.get("source", "general"),
                 "severity_score": rec.get("severity_score", 5),
                 "issue": {
                     "title": issue.get("title")
-                            or str(rec.get("recommendation", rec.get("source", "")))[:50],
+                    or str(rec.get("recommendation", rec.get("source", "")))[:50],
                 },
                 "recommendation": {
                     "effort": rec.get("effort", "medium"),
@@ -184,7 +187,8 @@ def render_enhanced_results_dashboard(final_report, image_base64, enabled_agents
         }
 
     normalized_recs = [_normalize_rec(r) for r in raw_recommendations]
-    enabled_agents = set(enabled_agents or ["visual", "ux", "market", "conversion", "brand"])
+    enabled_agents = set(enabled_agents or [
+                         "visual", "ux", "market", "conversion", "brand"])
 
     # Quick summary up top: key metrics + annotated + before/after (compact)
     st.subheader("Quick Summary")
@@ -205,27 +209,44 @@ def render_enhanced_results_dashboard(final_report, image_base64, enabled_agents
             st.metric("Brand", f"{agent_scores.get('brand', 0)}/100")
     with qs_col2:
         try:
-            ann_img = create_annotated_design(image_base64, normalized_recs)
-            st.image(ann_img, width="column", caption="Annotated preview", clamp=True)
-        except Exception:
-            st.info("Annotated preview unavailable.")
+            if not image_base64:
+                st.info("Annotated preview: No image data available")
+            else:
+                ann_img = create_annotated_design(image_base64, normalized_recs)
+                if ann_img:
+                    st.image(ann_img, width="column",
+                             caption="Annotated preview", clamp=True)
+                else:
+                    st.info("Annotated preview unavailable.")
+        except Exception as e:
+            st.warning(f"Annotated preview failed: {type(e).__name__}: {str(e)[:100]}")
 
     with qs_col3:
         try:
-            before_after = generate_before_after_mockup(image_base64, normalized_recs)
-            st.image(before_after, width="column", caption="Before / After (simulated)", clamp=True)
-        except Exception:
-            st.info("Before/After preview unavailable.")
+            if not image_base64:
+                st.info("Before/After preview: No image data available")
+            else:
+                before_after = generate_before_after_mockup(
+                    image_base64, normalized_recs)
+                if before_after:
+                    st.image(before_after, width="column",
+                             caption="Before / After (simulated)", clamp=True)
+                else:
+                    st.info("Before/After preview unavailable.")
+        except Exception as e:
+            st.warning(f"Before/After preview failed: {type(e).__name__}: {str(e)[:100]}")
 
     # Agent-specific highlights near top (collapsible)
     with st.expander("# Agent-Specific Highlights", expanded=True):
         detailed = final_report.get('detailed_findings', {})
 
         def _render_agent_card(title, sections):
-            parts = [f"<div style='font-size:15px;font-weight:700;margin-bottom:6px;'>{title}</div>"]
+            parts = [
+                f"<div style='font-size:15px;font-weight:700;margin-bottom:6px;'>{title}</div>"]
             for sect_title, recs in sections:
                 if recs:
-                    bullets = "".join([f"<li>{rec}</li>" for rec in recs[:2]])  # show top 2 to save space
+                    # show top 2 to save space
+                    bullets = "".join([f"<li>{rec}</li>" for rec in recs[:2]])
                     parts.append(
                         f"<div style='margin-bottom:6px;'><span style='font-weight:600;'>{sect_title}:</span>"
                         f"<ul style='margin:4px 0 0 18px;'>{bullets}</ul></div>"
@@ -249,13 +270,16 @@ def render_enhanced_results_dashboard(final_report, image_base64, enabled_agents
             ux = detailed.get("ux", {})
             agent_cards.append(("👤 UX", [
                 ("Usability", ux.get("usability", {}).get("recommendations", [])),
-                ("Accessibility", ux.get("accessibility", {}).get("recommendations", [])),
-                ("Interactions", ux.get("interaction_patterns", {}).get("recommendations", []))
+                ("Accessibility", ux.get("accessibility", {}).get(
+                    "recommendations", [])),
+                ("Interactions", ux.get("interaction_patterns", {}).get(
+                    "recommendations", []))
             ]))
         if "market" in enabled_agents and detailed.get("market"):
             mk = detailed.get("market", {})
             agent_cards.append(("📈 Market", [
-                ("Platform", mk.get("platform_optimization", {}).get("recommendations", [])),
+                ("Platform", mk.get("platform_optimization", {}).get(
+                    "recommendations", [])),
                 ("Trends", mk.get("trend_analysis", {}).get("recommendations", [])),
                 ("Audience", mk.get("audience_fit", {}).get("recommendations", []))
             ]))
@@ -271,7 +295,8 @@ def render_enhanced_results_dashboard(final_report, image_base64, enabled_agents
             agent_cards.append(("🏷️ Brand", [
                 ("Logo", br.get("logo_usage", {}).get("recommendations", [])),
                 ("Palette", br.get("palette_alignment", {}).get("recommendations", [])),
-                ("Typography", br.get("typography_alignment", {}).get("recommendations", [])),
+                ("Typography", br.get("typography_alignment", {}).get(
+                    "recommendations", [])),
                 ("Tone", br.get("tone_voice", {}).get("recommendations", []))
             ]))
 
@@ -281,7 +306,8 @@ def render_enhanced_results_dashboard(final_report, image_base64, enabled_agents
             for idx, card in enumerate(agent_cards):
                 target_col = col_left if idx % 2 == 0 else col_right
                 with target_col:
-                    st.markdown(_render_agent_card(card[0], card[1]), unsafe_allow_html=True)
+                    st.markdown(_render_agent_card(
+                        card[0], card[1]), unsafe_allow_html=True)
 
     # === TABS FOR DIFFERENT VIEWS ===
     tab1, tab2, tab3, tab4, tab5 = st.tabs([
@@ -291,10 +317,10 @@ def render_enhanced_results_dashboard(final_report, image_base64, enabled_agents
         "🎨 Visual Feedback",
         "📄 Detailed Data"
     ])
-    
+
     with tab1:
         st.subheader("Performance Scores")
-        
+
         # Gauge charts for scores (only enabled agents)
         overall_score = final_report.get('overall_score', 0)
         agent_scores = final_report.get('agent_scores', {})
@@ -324,20 +350,20 @@ def render_enhanced_results_dashboard(final_report, image_base64, enabled_agents
                     st.plotly_chart(fig, use_container_width=True)
                 except Exception:
                     st.metric(title, f"{value}/100")
-        
+
         # Add breathing room before charts
         st.markdown("<div style='height:16px;'></div>", unsafe_allow_html=True)
         st.divider()
-        
+
         # Radar chart and category breakdown
         col1, col2 = st.columns([1, 1])
-        
+
         with col1:
             try:
                 # Extract detailed scores
                 detailed = final_report.get('detailed_findings', {})
                 visual_data = detailed.get('visual', {})
-                
+
                 scores_dict = {
                     "Visual Design": visual_score,
                     "User Experience": ux_score,
@@ -347,9 +373,12 @@ def render_enhanced_results_dashboard(final_report, image_base64, enabled_agents
                     scores_dict["Conversion/CTA"] = conversion_score
                 if "brand" in enabled_agents:
                     scores_dict["Brand Consistency"] = brand_score
-                scores_dict["Color"] = visual_data.get('color_analysis', {}).get('score', visual_score)
-                scores_dict["Layout"] = visual_data.get('layout_analysis', {}).get('score', visual_score)
-                scores_dict["Typography"] = visual_data.get('typography', {}).get('score', visual_score)
+                scores_dict["Color"] = visual_data.get(
+                    'color_analysis', {}).get('score', visual_score)
+                scores_dict["Layout"] = visual_data.get(
+                    'layout_analysis', {}).get('score', visual_score)
+                scores_dict["Typography"] = visual_data.get(
+                    'typography', {}).get('score', visual_score)
 
                 # If only overall (no agents) skip chart
                 if len(scores_dict) <= 1:
@@ -359,16 +388,16 @@ def render_enhanced_results_dashboard(final_report, image_base64, enabled_agents
                     st.plotly_chart(fig, use_container_width=True)
             except Exception:
                 st.info("Radar chart unavailable.")
-        
+
         with col2:
-                # Category breakdown
-                if normalized_recs:
-                    try:
-                        fig = generate_category_breakdown_chart(normalized_recs)
-                        st.plotly_chart(fig, use_container_width=True)
-                    except Exception:
-                        st.info("Category chart unavailable.")
-        
+            # Category breakdown
+            if normalized_recs:
+                try:
+                    fig = generate_category_breakdown_chart(normalized_recs)
+                    st.plotly_chart(fig, use_container_width=True)
+                except Exception:
+                    st.info("Category chart unavailable.")
+
         # Accessibility compliance
         st.divider()
         detailed = final_report.get('detailed_findings', {})
@@ -379,10 +408,10 @@ def render_enhanced_results_dashboard(final_report, image_base64, enabled_agents
                 st.plotly_chart(fig, use_container_width=True)
             except Exception as e:
                 st.info("Accessibility compliance chart not available")
-    
+
     with tab2:
         st.subheader("🎯 Prioritized Recommendations")
-        
+
         if normalized_recs:
             # Priority matrix
             try:
@@ -390,23 +419,24 @@ def render_enhanced_results_dashboard(final_report, image_base64, enabled_agents
                 st.plotly_chart(fig, use_container_width=True)
             except Exception as e:
                 st.warning(f"Could not generate priority matrix: {e}")
-            
+
             st.divider()
-            
+
             # Timeline
             try:
                 fig = generate_improvement_timeline(normalized_recs)
                 st.plotly_chart(fig, use_container_width=True)
             except Exception as e:
                 st.warning(f"Could not generate timeline: {e}")
-            
+
             st.divider()
-            
+
             # List of recommendations
             st.subheader("Detailed Recommendations")
             for i, rec in enumerate(normalized_recs, 1):
-                priority = rec.get('priority', 'medium') if isinstance(rec, dict) else 'medium'
-                
+                priority = rec.get('priority', 'medium') if isinstance(
+                    rec, dict) else 'medium'
+
                 # Priority emoji
                 priority_emoji = {
                     'critical': '🔴',
@@ -414,16 +444,18 @@ def render_enhanced_results_dashboard(final_report, image_base64, enabled_agents
                     'medium': '🟡',
                     'low': '🟢'
                 }.get(priority.lower(), '⚪')
-                
+
                 rec_text = ""
                 if isinstance(rec, dict):
-                    rec_text = rec.get('issue', {}).get('title') or rec.get('recommendation', {}).get('action') or rec.get('recommendation', {}).get('effort') or 'No recommendation'
+                    rec_text = rec.get('issue', {}).get('title') or rec.get('recommendation', {}).get(
+                        'action') or rec.get('recommendation', {}).get('effort') or 'No recommendation'
                 if not rec_text:
                     rec_text = 'No recommendation'
-                source = rec.get('category', 'General') if isinstance(rec, dict) else 'General'
-                
+                source = rec.get('category', 'General') if isinstance(
+                    rec, dict) else 'General'
+
                 with st.expander(
-                    f"{priority_emoji} {i}. [{source}] {rec_text[:80]}...", 
+                    f"{priority_emoji} {i}. [{source}] {rec_text[:80]}...",
                     expanded=(i <= 3)
                 ):
                     st.write(f"**Priority:** {priority.upper()}")
@@ -431,10 +463,10 @@ def render_enhanced_results_dashboard(final_report, image_base64, enabled_agents
                     st.write(f"**Recommendation:** {rec_text}")
         else:
             st.info("No specific recommendations generated.")
-    
+
     with tab3:
         st.subheader("📈 Projected Impact")
-        
+
         if normalized_recs:
             # Impact projection
             try:
@@ -442,25 +474,26 @@ def render_enhanced_results_dashboard(final_report, image_base64, enabled_agents
                 st.plotly_chart(fig, use_container_width=True)
             except Exception as e:
                 st.warning(f"Could not generate impact chart: {e}")
-            
+
             st.divider()
-            
+
             # Key metrics
             col1, col2, col3 = st.columns(3)
-            
+
             with col1:
                 st.metric("Total Recommendations", len(normalized_recs))
-            
+
             with col2:
-                critical_high = sum(1 for r in normalized_recs if isinstance(r, dict) and r.get('priority') in ['critical', 'high'])
+                critical_high = sum(1 for r in normalized_recs if isinstance(
+                    r, dict) and r.get('priority') in ['critical', 'high'])
                 st.metric("Critical/High Priority", critical_high)
-            
+
             with col3:
                 est_improvement = "+12-15%"  # Calculated from recommendations
                 st.metric("Est. Performance Gain", est_improvement)
-            
+
             st.divider()
-            
+
             # Expected outcomes
             st.subheader("Expected Outcomes")
             st.markdown("""
@@ -473,106 +506,131 @@ def render_enhanced_results_dashboard(final_report, image_base64, enabled_agents
             """)
         else:
             st.info("No impact projections available.")
-    
+
     with tab4:
         st.subheader("🎨 Visual Feedback")
-        
+
         # Annotated design
         st.markdown("### Annotated Design (Issues Highlighted)")
-        
+
         try:
-            annotated_img = create_annotated_design(image_base64, normalized_recs)
-            st.image(annotated_img, width="column", caption="Design with issue annotations")
-            
-            # Download button
-            annotated_b64 = img_to_b64(annotated_img)
-            st.download_button(
-                "📥 Download Annotated Image",
-                data=base64.b64decode(annotated_b64),
-                file_name="annotated_design.png",
-                mime="image/png",
-                key="download_annotated"
-            )
+            if not image_base64:
+                st.info("Annotated design: No image data available")
+            else:
+                annotated_img = create_annotated_design(
+                    image_base64, normalized_recs)
+                if annotated_img:
+                    st.image(annotated_img, width="column",
+                             caption="Design with issue annotations")
+
+                    # Download button
+                    annotated_b64 = img_to_b64(annotated_img)
+                    st.download_button(
+                        "📥 Download Annotated Image",
+                        data=base64.b64decode(annotated_b64),
+                        file_name="annotated_design.png",
+                        mime="image/png",
+                        key="download_annotated"
+                    )
+                else:
+                    st.info("Could not generate annotated image (no result)")
         except Exception as e:
-            st.warning(f"Could not generate annotated image: {e}")
-        
+            import traceback
+            st.error(f"Could not generate annotated image: {type(e).__name__}")
+            with st.expander("Error details"):
+                st.code(f"{e}\n{traceback.format_exc()[:500]}", language="text")
+
         st.divider()
-        
+
         # Before/After mockup
         st.markdown("### Before / After Comparison")
         try:
-            before_after = generate_before_after_mockup(image_base64, normalized_recs)
-            st.image(before_after, width="column", caption="Before (left) vs After (right) with improvements")
-            
-            # Download button
-            ba_b64 = img_to_b64(before_after)
-            st.download_button(
-                "📥 Download Before/After",
-                data=base64.b64decode(ba_b64),
-                file_name="before_after_comparison.png",
-                mime="image/png",
-                key="download_before_after"
-            )
+            if not image_base64:
+                st.info("Before/After preview: No image data available")
+            else:
+                before_after = generate_before_after_mockup(
+                    image_base64, normalized_recs)
+                if before_after:
+                    st.image(before_after, width="column",
+                             caption="Before (left) vs After (right) with improvements")
+
+                    # Download button
+                    ba_b64 = img_to_b64(before_after)
+                    st.download_button(
+                        "📥 Download Before/After",
+                        data=base64.b64decode(ba_b64),
+                        file_name="before_after_comparison.png",
+                        mime="image/png",
+                        key="download_before_after"
+                    )
+                else:
+                    st.info("Could not generate before/after image (no result)")
         except Exception as e:
-            st.warning(f"Could not generate before/after: {e}")
-        
+            import traceback
+            st.error(f"Could not generate before/after: {type(e).__name__}")
+            with st.expander("Error details"):
+                st.code(f"{e}\n{traceback.format_exc()[:500]}", language="text")
+
         st.divider()
-        
+
         # Attention heatmap
         st.markdown("### Attention Heatmap (Predicted User Focus)")
         try:
-            heatmap_img = generate_heatmap_visualization(image_base64, "attention")
-            st.image(heatmap_img, width="column", caption="Red = High attention, Blue = Low attention")
+            heatmap_img = generate_heatmap_visualization(
+                image_base64, "attention")
+            st.image(heatmap_img, width="column",
+                     caption="Red = High attention, Blue = Low attention")
         except Exception as e:
             st.warning(f"Could not generate heatmap: {e}")
-        
+
         st.divider()
-        
+
         # Color palette
         st.markdown("### Extracted Color Palette")
         detailed = final_report.get('detailed_findings', {})
         visual_data = detailed.get('visual', {})
         color_analysis = visual_data.get('color_analysis', {})
         palette = color_analysis.get('palette', [])
-        
+
         if palette and len(palette) > 0:
             try:
                 palette_img = generate_color_palette_visualization(palette)
                 if palette_img:
-                    st.image(palette_img, width="auto", caption="Primary colors in design")
+                    st.image(palette_img, width="auto",
+                             caption="Primary colors in design")
             except Exception as e:
                 st.warning(f"Could not generate palette: {e}")
         else:
             st.info("No color palette extracted")
-    
+
     with tab5:
         st.subheader("🔍 Detailed Analysis Data")
-        
+
         detailed = final_report.get('detailed_findings', {})
-        
+
         sub_tab1, sub_tab2, sub_tab3, sub_tab4, sub_tab5, sub_tab6 = st.tabs([
             "🎨 Visual Analysis",
-            "👤 UX Analysis", 
+            "👤 UX Analysis",
             "📈 Market Analysis",
             "🎯 Conversion Analysis",
             "🏷️ Brand Analysis",
             "📋 Full Report"
         ])
-        
+
         with sub_tab1:
             visual_data = detailed.get('visual', {})
             if visual_data:
                 st.json(visual_data)
             else:
                 st.info("No visual analysis data")
-        
+
         with sub_tab2:
             ux_data = detailed.get('ux', {})
             if ux_data:
                 st.json(ux_data)
             else:
                 st.info("No UX analysis data")
-        
+
         with sub_tab3:
             market_data = detailed.get('market', {})
             if market_data:
@@ -586,14 +644,14 @@ def render_enhanced_results_dashboard(final_report, image_base64, enabled_agents
                 st.json(conversion_data)
             else:
                 st.info("No conversion analysis data")
-        
+
         with sub_tab5:
             brand_data = detailed.get('brand', {})
             if brand_data:
                 st.json(brand_data)
             else:
                 st.info("No brand analysis data")
-        
+
         with sub_tab6:
             st.json(final_report)
 
@@ -617,7 +675,8 @@ def main():
 
     # Title
     st.title("🎨 Multimodal Design Analysis Suite")
-    st.markdown("*Powered by OpenRouter API + LangGraph + FAISS RAG + CLIP + Visual Analytics*")
+    st.markdown(
+        "*Powered by OpenRouter API + LangGraph + FAISS RAG + CLIP + Visual Analytics*")
     if "hide_upload_section" not in st.session_state:
         st.session_state["hide_upload_section"] = False
     expand_default = True
@@ -630,16 +689,16 @@ def main():
         - 🔧 Controls: agent toggles, creative type, RAG `top_k`, and per-agent error surfacing.
         """)
     st.markdown("---")
-    
+
     # Quick badges on why it's ideal
     badge_cols = st.columns(3)
     badge_cols[0].info("🧠 Multimodal Vision + Text LLM")
     badge_cols[1].success("📚 Design RAG + Best Practices")
     badge_cols[2].warning("🤖 Agents: Visual, UX, Market, Conversion")
-    
+
     # Initialize system
     faiss_index, metadata, graph = initialize_system()
-    
+
     # Sidebar
     with st.sidebar:
         # Logo - clickable
@@ -652,9 +711,9 @@ def main():
                     unsafe_allow_html=True
                 )
             st.divider()
-        
+
         st.header("🔑 OpenRouter API Setup")
-        
+
         # BYOK: API Key input
         api_key = st.text_input(
             "Enter your OpenRouter API Key",
@@ -663,15 +722,15 @@ def main():
             help="Get your free API key from https://openrouter.ai/keys",
             key="api_key_input"
         )
-        
+
         if api_key:
             st.success("✅ API key configured")
         else:
             st.warning("⚠️ Please enter your OpenRouter API key to continue")
-        
+
         st.divider()
         st.header("📤 Upload Design(s)")
-        
+
         # Mode selection
         analysis_mode = st.radio(
             "Analysis Mode",
@@ -687,7 +746,7 @@ def main():
             step=1,
             help="Number of retrieved design patterns to inject into each agent prompt"
         )
-        
+
         if analysis_mode == "Single Design":
             uploaded_file = st.file_uploader(
                 "Choose an image file",
@@ -696,7 +755,7 @@ def main():
                 key="single_upload"
             )
             uploaded_files = [uploaded_file] if uploaded_file else []
-        
+
         else:  # Compare mode
             uploaded_files = st.file_uploader(
                 "Choose 2-5 image files",
@@ -707,13 +766,13 @@ def main():
             )
             if not uploaded_files:
                 uploaded_files = []
-        
+
         platform = st.selectbox(
             "Target Platform",
             ["Instagram", "Facebook", "LinkedIn", "Twitter", "Pinterest"],
             help="Select the platform this design is intended for"
         )
-        
+
         creative_type = st.selectbox(
             "Creative Type",
             ["Marketing Creative", "Product UI/App Screen"],
@@ -734,13 +793,13 @@ def main():
             format_func=lambda k: agent_options.get(k, k),
             help="Toggle agents to include in the workflow"
         )
-        
+
         st.divider()
-        
+
         st.markdown("### 🤖 Model Info")
         vision_model = os.getenv("VISION_MODEL", "openai/gpt-4-vision-preview")
         st.code(vision_model, language="text")
-        
+
         st.markdown("### ℹ️ New Features")
         st.markdown("""
         ✨ **Enhanced Output:**
@@ -759,45 +818,48 @@ def main():
         - Attention heatmaps
         - Color palette extraction
         """)
-    
+
     # Main content
     if analysis_mode == "Single Design" and len(uploaded_files) > 0 and uploaded_files[0] is not None:
         uploaded_file = uploaded_files[0]
-        
+
         with st.expander("📤 Uploaded Design", expanded=not st.session_state.get("hide_upload_section", False)):
             # Display uploaded image
             col1, col2 = st.columns([1, 1])
-            
+
             with col1:
                 st.subheader("📸 Uploaded Design")
                 st.image(uploaded_file, use_column_width=True)
-            
+
             with col2:
                 st.subheader("ℹ️ Image Information")
-                
+
                 try:
                     uploaded_file.seek(0)
                     processed_img = preprocess_image(uploaded_file)
                     metadata_info = extract_image_metadata(processed_img)
-                    
-                    st.write(f"**Dimensions:** {metadata_info['width']} x {metadata_info['height']}px")
-                    st.write(f"**Aspect Ratio:** {metadata_info['aspect_ratio']}:1")
+
+                    st.write(
+                        f"**Dimensions:** {metadata_info['width']} x {metadata_info['height']}px")
+                    st.write(
+                        f"**Aspect Ratio:** {metadata_info['aspect_ratio']}:1")
                     st.write(f"**Format:** {metadata_info['format']}")
                     st.write(f"**Color Mode:** {metadata_info['mode']}")
                     st.write(f"**Target Platform:** {platform}")
                 except Exception as e:
                     st.warning(f"Could not extract metadata: {e}")
-        
+
         st.divider()
-        
+
         # Analyze button
         if st.button("🚀 Analyze Design", type="primary", use_container_width=True, key="analyze_single"):
             # Validate API key first
             if not api_key or not api_key.strip():
-                st.error("❌ Please enter your OpenRouter API key in the sidebar to proceed")
+                st.error(
+                    "❌ Please enter your OpenRouter API key in the sidebar to proceed")
                 st.info("Get your free API key from: https://openrouter.ai/keys")
                 st.stop()
-            
+
             try:
                 with st.spinner("🔄 Processing image..."):
                     uploaded_file.seek(0)
@@ -808,7 +870,7 @@ def main():
                     if img_embedding is None:
                         img_embedding = np.zeros(512)
                     img_metadata = extract_image_metadata(processed_image)
-                
+
                 # Create initial state with BYOK API key
                 initial_state = {
                     "image_base64": img_base64,
@@ -830,27 +892,29 @@ def main():
                     "model_used": os.getenv("VISION_MODEL", "openai/gpt-4-vision-preview"),
                     "api_key": api_key  # BYOK: Pass user-provided API key
                 }
-                
+
                 # Progress tracking
                 progress_placeholder = st.empty()
                 status_placeholder = st.empty()
-                
+
                 def progress_callback(step, total, message):
                     progress_placeholder.progress(step / total)
                     status_placeholder.info(message)
-                
+
                 # Execute workflow with user's API key
                 st.info("🤖 Running AI analysis workflow...")
-                final_state = execute_analysis_workflow(graph, initial_state, progress_callback)
-                
+                final_state = execute_analysis_workflow(
+                    graph, initial_state, progress_callback)
+
                 progress_placeholder.empty()
                 status_placeholder.success("✅ Analysis complete!")
                 st.session_state["hide_upload_section"] = True
-                
+
                 # Display enhanced results
                 final_report = final_state.get('final_report', {})
-                render_enhanced_results_dashboard(final_report, img_base64, enabled_agents)
-                
+                render_enhanced_results_dashboard(
+                    final_report, img_base64, enabled_agents)
+
                 # Download button
                 st.divider()
                 report_json = json.dumps(final_report, indent=2)
@@ -862,58 +926,62 @@ def main():
                     use_container_width=True,
                     key="download_report"
                 )
-            
+
             except Exception as e:
                 st.error(f"❌ Analysis failed: {str(e)}")
                 with st.expander("Error Details"):
                     st.exception(e)
-    
+
     elif analysis_mode == "Compare Designs (2-5)" and len(uploaded_files) > 0:
         num_files = len(uploaded_files)
-        
+
         if num_files < 2:
             st.warning("⚠️ Please upload at least 2 designs to compare")
         elif num_files > 5:
             st.warning("⚠️ Maximum 5 designs allowed. Using first 5...")
             uploaded_files = uploaded_files[:5]
             num_files = 5
-        
+
         if 2 <= num_files <= 5:
             # Display uploaded designs
             st.subheader(f"📸 Uploaded Designs ({num_files})")
-            
+
             cols = st.columns(num_files)
             for i, (col, file) in enumerate(zip(cols, uploaded_files)):
                 with col:
-                    st.image(file, width="column", caption=f"Design {chr(65+i)}")
-            
+                    st.image(file, width="column",
+                             caption=f"Design {chr(65+i)}")
+
             st.divider()
-            
+
             # Compare button
             if st.button("🔄 Compare Designs", type="primary", use_container_width=True, key="compare_designs"):
                 # Validate API key first
                 if not api_key or not api_key.strip():
-                    st.error("❌ Please enter your OpenRouter API key in the sidebar to proceed")
-                    st.info("Get your free API key from: https://openrouter.ai/keys")
+                    st.error(
+                        "❌ Please enter your OpenRouter API key in the sidebar to proceed")
+                    st.info(
+                        "Get your free API key from: https://openrouter.ai/keys")
                     st.stop()
-                
+
                 try:
                     st.session_state["hide_upload_section"] = True
                     with st.spinner("🔄 Processing designs..."):
                         designs_data = []
-                        
+
                         for i, file in enumerate(uploaded_files):
                             file.seek(0)
                             processed_img = preprocess_image(file)
                             img_base64 = image_to_base64(processed_img)
-                            img_embedding = generate_clip_embedding(processed_img)
-                            
+                            img_embedding = generate_clip_embedding(
+                                processed_img)
+
                             designs_data.append({
                                 "name": f"Design {chr(65+i)}",
                                 "image_base64": img_base64,
                                 "embedding": img_embedding.tolist()
                             })
-                    
+
                     # Run comparison with user's API key
                     with st.spinner("🤖 Running AI comparison analysis..."):
                         comparison_result = compare_multiple_designs(
@@ -923,36 +991,41 @@ def main():
                             platform,
                             api_key=api_key  # BYOK: Pass user-provided API key
                         )
-                    
+
                     if "error" in comparison_result:
-                        st.error(f"❌ Comparison failed: {comparison_result['error']}")
+                        st.error(
+                            f"❌ Comparison failed: {comparison_result['error']}")
                         if "details" in comparison_result:
                             with st.expander("Error Details"):
                                 st.write(comparison_result['details'])
                     else:
                         st.success("✅ Comparison complete!")
-                        
+
                         # Display comparison results
                         st.header("🔄 Design Comparison Results")
-                        
+
                         # Winner
                         winner = comparison_result.get('winner', 'Unknown')
-                        confidence = comparison_result.get('confidence', 'medium')
-                        st.success(f"🏆 **Winner:** {winner} (Confidence: {confidence})")
-                        
+                        confidence = comparison_result.get(
+                            'confidence', 'medium')
+                        st.success(
+                            f"🏆 **Winner:** {winner} (Confidence: {confidence})")
+
                         # Ranking
                         ranking = comparison_result.get('overall_ranking', [])
                         if ranking:
-                            st.write("**Overall Ranking:**", " > ".join(ranking))
-                        
+                            st.write("**Overall Ranking:**",
+                                     " > ".join(ranking))
+
                         st.divider()
-                        
+
                         # Side-by-side comparison image
                         st.subheader("Visual Comparison")
                         try:
-                            comparison_img = generate_side_by_side_comparison_image(designs_data, comparison_result)
+                            comparison_img = generate_side_by_side_comparison_image(
+                                designs_data, comparison_result)
                             st.image(comparison_img, width="column")
-                            
+
                             # Download button
                             comp_b64 = img_to_b64(comparison_img)
                             st.download_button(
@@ -963,26 +1036,29 @@ def main():
                                 key="download_comparison_img"
                             )
                         except Exception as e:
-                            st.warning(f"Could not generate comparison image: {e}")
-                        
+                            st.warning(
+                                f"Could not generate comparison image: {e}")
+
                         st.divider()
-                        
+
                         # Scores comparison
                         st.subheader("Score Comparison")
-                        relative_scores = comparison_result.get('relative_scores', {})
-                        
+                        relative_scores = comparison_result.get(
+                            'relative_scores', {})
+
                         if relative_scores:
                             # Create comparison dataframe
                             try:
                                 import pandas as pd
                                 scores_df = pd.DataFrame(relative_scores).T
-                                st.dataframe(scores_df, use_container_width=True)
+                                st.dataframe(
+                                    scores_df, use_container_width=True)
                             except ImportError:
                                 # Fallback: display as text if pandas unavailable
                                 st.write("**Comparison Scores:**")
                                 for key, scores in relative_scores.items():
                                     st.write(f"**{key}**: {scores}")
-                            
+
                             # Bar chart
                             try:
                                 import plotly.express as px
@@ -991,66 +1067,79 @@ def main():
                                     x='index',
                                     y=['visual', 'ux', 'market', 'overall'],
                                     title="Score Comparison by Category",
-                                    labels={'index': 'Design', 'value': 'Score', 'variable': 'Category'},
+                                    labels={
+                                        'index': 'Design', 'value': 'Score', 'variable': 'Category'},
                                     barmode='group',
                                     color_discrete_sequence=px.colors.qualitative.Set2
                                 )
                                 st.plotly_chart(fig, use_container_width=True)
                             except Exception as e:
-                                st.warning(f"Could not generate bar chart: {e}")
-                        
+                                st.warning(
+                                    f"Could not generate bar chart: {e}")
+
                         st.divider()
-                        
+
                         # Key differences
                         st.subheader("Key Differences")
-                        key_diffs = comparison_result.get('key_differences', [])
+                        key_diffs = comparison_result.get(
+                            'key_differences', [])
                         if key_diffs:
                             for diff in key_diffs:
-                                aspect = diff.get('aspect', 'Aspect').replace('_', ' ').title()
+                                aspect = diff.get('aspect', 'Aspect').replace(
+                                    '_', ' ').title()
                                 with st.expander(f"🔍 {aspect}"):
-                                    st.write(f"**Winner:** {diff.get('winner', 'N/A')}")
-                                    st.write(f"**Reason:** {diff.get('reason', 'N/A')}")
-                                    
+                                    st.write(
+                                        f"**Winner:** {diff.get('winner', 'N/A')}")
+                                    st.write(
+                                        f"**Reason:** {diff.get('reason', 'N/A')}")
+
                                     for design in designs_data:
                                         name = design['name']
                                         if name in diff:
-                                            st.write(f"**{name}:** {diff[name]}")
+                                            st.write(
+                                                f"**{name}:** {diff[name]}")
                         else:
                             st.info("No specific differences identified")
-                        
+
                         st.divider()
-                        
+
                         # Synthesis recommendation
                         st.subheader("💡 Synthesis Recommendation")
-                        synthesis = comparison_result.get('synthesis_recommendation', {})
+                        synthesis = comparison_result.get(
+                            'synthesis_recommendation', {})
                         if synthesis:
-                            st.info(synthesis.get('description', 'No synthesis available'))
-                            
+                            st.info(synthesis.get('description',
+                                    'No synthesis available'))
+
                             steps = synthesis.get('implementation_steps', [])
                             if steps:
                                 st.write("**Implementation Steps:**")
                                 for i, step in enumerate(steps, 1):
                                     st.write(f"{i}. {step}")
-                            
-                            improvement = synthesis.get('expected_improvement', 'N/A')
+
+                            improvement = synthesis.get(
+                                'expected_improvement', 'N/A')
                             st.metric("Expected Improvement", improvement)
                         else:
                             st.info("No synthesis recommendation available")
-                        
+
                         st.divider()
-                        
+
                         # A/B Test Plan
                         st.subheader("🧪 A/B Test Recommendation")
                         ab_test = comparison_result.get('ab_test_plan', {})
                         if ab_test:
                             col1, col2, col3 = st.columns(3)
                             with col1:
-                                st.metric("Recommended Test", ab_test.get('recommended_test', 'N/A'))
+                                st.metric("Recommended Test", ab_test.get(
+                                    'recommended_test', 'N/A'))
                             with col2:
-                                st.metric("Duration", ab_test.get('test_duration', 'N/A'))
+                                st.metric("Duration", ab_test.get(
+                                    'test_duration', 'N/A'))
                             with col3:
-                                st.metric("Predicted Winner", ab_test.get('predicted_winner', 'N/A'))
-                            
+                                st.metric("Predicted Winner", ab_test.get(
+                                    'predicted_winner', 'N/A'))
+
                             st.write("**Key Metrics to Track:**")
                             metrics = ab_test.get('key_metrics', [])
                             if metrics:
@@ -1060,30 +1149,38 @@ def main():
                                 st.info("No specific metrics defined")
                         else:
                             st.info("No A/B test plan available")
-                        
+
                         # Similarity matrix
                         st.divider()
                         st.subheader("🔗 Design Similarity Analysis")
                         try:
-                            similarity_data = generate_similarity_matrix(designs_data)
-                            
-                            most_sim = similarity_data.get('most_similar_pair', {})
-                            most_diff = similarity_data.get('most_different_pair', {})
-                            
+                            similarity_data = generate_similarity_matrix(
+                                designs_data)
+
+                            most_sim = similarity_data.get(
+                                'most_similar_pair', {})
+                            most_diff = similarity_data.get(
+                                'most_different_pair', {})
+
                             if most_sim.get('designs'):
-                                st.write(f"**Most Similar:** {most_sim['designs'][0]} ↔ {most_sim['designs'][1]} ({most_sim.get('similarity', 0):.2%})")
-                            
+                                st.write(
+                                    f"**Most Similar:** {most_sim['designs'][0]} ↔ {most_sim['designs'][1]} ({most_sim.get('similarity', 0):.2%})")
+
                             if most_diff.get('designs'):
-                                st.write(f"**Most Different:** {most_diff['designs'][0]} ↔ {most_diff['designs'][1]} ({most_diff.get('similarity', 0):.2%})")
-                            
-                            avg_sim = similarity_data.get('average_similarity', 0)
+                                st.write(
+                                    f"**Most Different:** {most_diff['designs'][0]} ↔ {most_diff['designs'][1]} ({most_diff.get('similarity', 0):.2%})")
+
+                            avg_sim = similarity_data.get(
+                                'average_similarity', 0)
                             st.write(f"**Average Similarity:** {avg_sim:.2%}")
                         except Exception as e:
-                            st.warning(f"Could not generate similarity analysis: {e}")
-                        
+                            st.warning(
+                                f"Could not generate similarity analysis: {e}")
+
                         # Download comparison report
                         st.divider()
-                        comparison_json = json.dumps(comparison_result, indent=2)
+                        comparison_json = json.dumps(
+                            comparison_result, indent=2)
                         st.download_button(
                             label="📥 Download Comparison Report (JSON)",
                             data=comparison_json,
@@ -1092,17 +1189,18 @@ def main():
                             use_container_width=True,
                             key="download_comparison_report"
                         )
-                
+
                 except Exception as e:
                     st.error(f"❌ Comparison failed: {str(e)}")
                     with st.expander("Error Details"):
                         st.exception(e)
-    
+
     else:
         # Welcome screen
         st.info("👆 Upload design(s) in the sidebar to begin analysis")
-    
+
     # Collapse overview once a file is uploaded (handled via expanded flag above)
+
 
 if __name__ == "__main__":
     main()
