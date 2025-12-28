@@ -1,8 +1,10 @@
 # components/llm_client.py
 
 """
-LLM Client Wrapper
+LLM Client Wrapper - FIXED VERSION
 Unified interface for vision and text LLM calls with retry logic, timeouts, and usage tracking
+
+FIX: Properly format images for Claude models via OpenRouter
 """
 
 import os
@@ -278,7 +280,7 @@ def _run_openrouter_llm(
     start_time: float,
     api_key: Optional[str] = None
 ) -> LLMResponse:
-    """Internal: Run LLM call via OpenRouter API"""
+    """Internal: Run LLM call via OpenRouter API - FIXED for Claude models"""
 
     # Use provided API key or fall back to environment variable
     effective_api_key = api_key or OPENROUTER_API_KEY
@@ -305,19 +307,36 @@ def _run_openrouter_llm(
         })
 
     # Add images if provided (vision task)
+    # FIX: Check if this is a Claude model and use proper format
     if images:
-        for image_url in images:
-            if isinstance(image_url, str):
-                # Ensure proper data URL format
-                if image_url.startswith("data:"):
-                    url = image_url
+        is_claude_model = "claude" in model.lower()
+        
+        for image_data in images:
+            if isinstance(image_data, str):
+                # Remove data URL prefix if present
+                if image_data.startswith("data:image/"):
+                    # Extract base64 part only
+                    base64_str = image_data.split("base64,", 1)[-1]
                 else:
-                    url = f"data:image/jpeg;base64,{image_url}"
+                    base64_str = image_data
 
-                content.append({
-                    "type": "image_url",
-                    "image_url": {"url": url}
-                })
+                # FIXED: Use correct format for Claude models
+                if is_claude_model:
+                    content.append({
+                        "type": "image",
+                        "source": {
+                            "type": "base64",
+                            "media_type": "image/jpeg",
+                            "data": base64_str
+                        }
+                    })
+                else:
+                    # For OpenAI models via OpenRouter, use image_url format
+                    url = f"data:image/jpeg;base64,{base64_str}"
+                    content.append({
+                        "type": "image_url",
+                        "image_url": {"url": url}
+                    })
 
     # Build request headers
     headers = {
