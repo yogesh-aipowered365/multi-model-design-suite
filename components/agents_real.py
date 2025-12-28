@@ -63,7 +63,7 @@ Focus on actionable feedback."""
             messages=[{"role": "user", "content": prompt}],
             images=[image_base64],
             temperature=0.7,
-            max_tokens=2000,
+            max_tokens=1000,
             json_mode=True,
             api_key=api_key
         )
@@ -209,7 +209,7 @@ Focus on usability problems that reduce conversions or cause friction."""
             messages=[{"role": "user", "content": prompt}],
             images=[image_base64],
             temperature=0.7,
-            max_tokens=2000,
+            max_tokens=1000,
             json_mode=True,
             api_key=api_key
         )
@@ -353,7 +353,7 @@ Assess how well this creative fits the market and platform."""
             messages=[{"role": "user", "content": prompt}],
             images=[image_base64],
             temperature=0.7,
-            max_tokens=2000,
+            max_tokens=1000,
             json_mode=True,
             api_key=api_key
         )
@@ -494,7 +494,7 @@ Focus on conversion barriers and CTA optimization."""
             messages=[{"role": "user", "content": prompt}],
             images=[image_base64],
             temperature=0.7,
-            max_tokens=2000,
+            max_tokens=1000,
             json_mode=True,
             api_key=api_key
         )
@@ -632,7 +632,7 @@ Assess brand consistency and identity alignment."""
             messages=[{"role": "user", "content": prompt}],
             images=[image_base64],
             temperature=0.7,
-            max_tokens=2000,
+            max_tokens=1000,
             json_mode=True,
             api_key=api_key
         )

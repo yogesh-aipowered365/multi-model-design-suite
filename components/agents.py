@@ -129,7 +129,7 @@ def generate_fallback_response(response_type):
     return fallback_responses.get(response_type, {})
 
 
-def call_vision_api(image_base64, prompt, temperature=0.7, max_tokens=2000, retries=2, api_key=None):
+def call_vision_api(image_base64, prompt, temperature=0.7, max_tokens=1000, retries=2, api_key=None):
     """
     Wrapper function to call vision API via LLM client
 

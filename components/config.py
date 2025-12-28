@@ -38,7 +38,7 @@ class Config:
     # Model Parameters (OPTIONAL)
     # ========================================================================
 
-    MAX_TOKENS: int = int(os.getenv("MAX_TOKENS", "2000"))
+    MAX_TOKENS: int = int(os.getenv("MAX_TOKENS", "1000"))
     TEMPERATURE: float = float(os.getenv("TEMPERATURE", "0.7"))
     TOP_K_RAG: int = int(os.getenv("TOP_K_RAG", "3"))
 
